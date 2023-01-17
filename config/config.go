@@ -27,7 +27,7 @@ func GetConfig() Config {
 }
 
 func parseEnvToInt(envName, defaultValue string)int{
-	// If you send envName = PORT, 
+	// If you send envName = PORT and it returns 8080, or send TIMEOUT, returns 30
 	num, err := strconv.Atoi(env.GetEnv(envName, defaultValue))	// num is int
 	if err != nil {
 		return 0

@@ -96,11 +96,3 @@ func (db *Database) Delete (condition map[string]interface{}, tableName string) 
 		}
 		return db.connection.DeleteItem(input)
 }
-
-
-
-
-
-
-
-

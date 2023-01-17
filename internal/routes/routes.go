@@ -11,7 +11,7 @@ import (
 
 type Router struct {
 	config *Config
-	router *chi.Router
+	router *chi.Mux
 }
 
 func NewRouter() *Router {
@@ -24,7 +24,7 @@ func NewRouter() *Router {
 func (r *Router) SetRouters(repository adapter.Interface) *chi.Mux {
 	r.setConfigsRouters() 		// these 3 functions are defined below
 	r.RouterHealth(repository)
-	r.RouterProduct()
+	r.RouterProduct(repository)
 
 	return r.router
 }
@@ -96,7 +96,7 @@ func (r *Router) EnableRequestID() *Router {
 	return r
 }
 
-func (r *Router) EnableRealIP() {
+func (r *Router) EnableRealIP() *Router {
 	r.router.Use(middleware.RealIP)
 	return r
 }
