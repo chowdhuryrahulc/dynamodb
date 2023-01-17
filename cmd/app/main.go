@@ -50,8 +50,7 @@ Repository: has code about talking to db
 	1) adapter-->adapter.go--> 
 	2) instance-->instance.go--> started dynamodb session
 
-
-
+	create foundation of project by creating routes, enviournment, config, response,logger etc 
 
 
 */

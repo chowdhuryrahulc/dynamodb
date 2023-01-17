@@ -1,4 +1,4 @@
-package routes
+package routes //! in this file, we have set up our CORS
 
 import (
 	"net/http"

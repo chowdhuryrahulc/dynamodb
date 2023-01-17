@@ -1,19 +1,33 @@
-package adapter
+package adapter	//! This file has functions that talks directly to dynamodb
 
-import "github.com/aws/aws-sdk-go/service/dynamodb"
+import (
+	// take care of these specific imports
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
+)
 
 type Database struct {
-	// thius struct is used to tsalk to db
+	// thus struct is used to talk to db
 	connection *dynamodb.DynamoDB
 	logMode bool
 }
 
 type Interface interface {
-
+	// this is a list of all the functions we have below, db struct methords
+	Health() bool
+	FindAll(condition expression.Expression, tableName string)(response *dynamodb.ScanOutput, err error)
+	FindOne(condition map[string]interface{}, tableName string)(response *dynamodb.GetItemOutput, err error)
+	CreateOrUpdate(entity interface{}, tableName string)(response *dynamodb.PutItemOutput, err error)
+	Delete(condition map[string]interface{}, tableName string)(response *dynamodb.DeleteItemOutput, err error)
 }
 
-type NewAdapter() Interface {
-	
+func NewAdapter(con *dynamodb.DynamoDB) Interface {
+	return &Database{
+		connection: con,
+		logMode: false,
+	}
 }
 
 //! below functions talk directly to dynamodb and get the result
@@ -26,11 +40,19 @@ func (db *Database) Health() bool {
 	return err == nil
 }
 
-func (db *Database) FindAll {
-	// checks health of dynamodb
+func (db *Database) FindAll (condition expression.Expression, tableName string) (response *dynamodb.ScanOutput, err error) {
+	// expression.Expression is a part of dynamodb package
+	input := dynamodb.ScanInput{
+		ExpressionAttributeNames: condition.Names(),	// dynamodb query: conditions used to filter and fetch data
+		ExpressionAttributeValues: condition.Values(),
+		FilterExpression: condition.Filter(),
+		ProjectionExpression: condition.Projection(),
+		TableName: aws.String(tableName),
+	}
 }
 
-func (db *Database) FindOne(condition map[string]interface{}, tableName) (response *dynamodb.GetItemOutput, err error) {
+
+func (db *Database) FindOne(condition map[string]interface{}, tableName string) (response *dynamodb.GetItemOutput, err error) {
 	// get 1 data from dynamodb
 
 	conditionParsed, err := dynamodbattribute.MarshalMap(condition) 
@@ -40,10 +62,10 @@ func (db *Database) FindOne(condition map[string]interface{}, tableName) (respon
 	}
 
 	input := &dynamodb.GetItemInput{
-		TableName: aws.String(tableName)	// dynamodb table from where you have to get the data
+		TableName: aws.String(tableName),	// dynamodb table from where you have to get the data
 		Key: conditionParsed,
 	}
-	return db.Connection.GetItem(input)
+	return db.connection.GetItem(input)
 }
 
 func (db *Database) CreateOrUpdate (entity interface{}, tableName string) (response *dynamodb.PutItemOutput, err error) {
@@ -55,26 +77,24 @@ func (db *Database) CreateOrUpdate (entity interface{}, tableName string) (respo
 
 	input:= &dynamodb.PutItemInput{
 		Item: entityParsed,
-		TableName: aws.String(tableName)
+		TableName: aws.String(tableName),
 	}
-	return db.Connection.PutItem(input)
+	return db.connection.PutItem(input)
 }
 
 func (db *Database) Delete (condition map[string]interface{}, tableName string) (response *dynamodb.DeleteItemOutput, err error) {
 	// delete is always similar to findone, bcoz we find a item using a condition, and delete it
-	&dynamodb.DeleteItemInput{
-	conditionParsed, err := dynamodbattribute.MarshalMap(condition) 
-	// condition: means id=.., name=... type conditions. {} means no condition means get all the data
-	if err != nil {
-		return nil, err
-	}
+		conditionParsed, err := dynamodbattribute.MarshalMap(condition)
+		// condition: means id=.., name=... type conditions. {} means no condition means get all the data
+		if err != nil {
+			return nil, err
+		}
 
-	input := &dynamodb.DeleteItemInput{
-		Key: conditionParsed,
-		TableName: aws.String(tableName)	// dynamodb table from where you have to delete the data
-	}
-	return db.Connection.DeleteItem(input)
-	}
+		input := &dynamodb.DeleteItemInput{
+			Key: conditionParsed,
+			TableName: aws.String(tableName),	// dynamodb table from where you have to delete the data
+		}
+		return db.connection.DeleteItem(input)
 }
 
 

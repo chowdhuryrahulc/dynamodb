@@ -1,11 +1,12 @@
-package routes
+package routes //! This file has all the routes
 
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	ServerConfig "github.com/chowdhuryrhulc/dynamodb/config" // this is our config folder in outer project
-	HealthHandler "github.com/chowdhuryrhulc/dynamodb/internal/handlers/health"
-	ProductHandler "github.com/chowdhuryrhulc/dynamodb/internal/handlers/product"
+	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
+	ServerConfig "github.com/chowdhuryrahulc/dynamodb/config" // this is our config folder in outer project
+	HealthHandler "github.com/chowdhuryrahulc/dynamodb/internal/handlers/health"
+	ProductHandler "github.com/chowdhuryrahulc/dynamodb/internal/handlers/product"
 )
 
 type Router struct {
@@ -39,6 +40,7 @@ func (r *Router) setConfigsRouters() {
 
 // delete all r Routers below
 func (r *Router) RouterHealth(repository adapter.Interface) {
+	//? All Health Routes here 
 	handler := HealthHandler.newHandler(repository)
 
 	// putting our routes, same done by gorilla mux
@@ -52,6 +54,7 @@ func (r *Router) RouterHealth(repository adapter.Interface) {
 }
 
 func (r *Router) RouterProduct(repository adapter.Interface) {
+	//? All Product Routes here 
 	handler := ProductHandler.newHandler(repository)
 
 	// putting our routes, same done by gorilla mux
@@ -64,28 +67,36 @@ func (r *Router) RouterProduct(repository adapter.Interface) {
 	})
 }
 
-func (r *Router) EnableTimeout() {
-
+func (r *Router) EnableLogger() *Router {
+	// chi router middleware gives us a logger, which we will use here
+	r.router.Use(middleware.Logger)
+	return r
 }
 
-func (r *Router) EnableCORS() {
-
+func (r *Router) EnableTimeout() *Router {
+	// chi router middleware gives us a Timeout, which we will use here
+	//todo: r.config.GetTimeout()??
+	r.router.Use(middleware.Timeout(r.config.GetTimeout()))
+	return r
 }
 
-func (r *Router) EnableRecover() {
-
+func (r *Router) EnableCORS() *Router {
+	// chi router middleware gives us a logger, which we will use here
+	r.router.Use(r.config.Cors)
+	return r
 }
 
-func (r *Router) EnableRequestID() {
+func (r *Router) EnableRecover() *Router {
+	r.router.Use(middleware.Recoverer)
+	return r
+}
 
+func (r *Router) EnableRequestID() *Router {
+	r.router.Use(middleware.RequestID)
+	return r
 }
 
 func (r *Router) EnableRealIP() {
-
-}
-
-func (r *Router) EnableLogger() {
-	// chi router gives us a logger, which we will use here
-	r.router.Use(middleware.Logger)
+	r.router.Use(middleware.RealIP)
 	return r
 }
