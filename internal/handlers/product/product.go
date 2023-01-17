@@ -3,9 +3,15 @@ package product
 import (
 	"errors"
 	"net/http"
+	"time"
 
-	handler "github.com/chowdhuryrahulc/dynamodb/internal/handlers"
+	"github.com/chowdhuryrahulc/dynamodb/internal/handlers"
+	Rules "github.com/chowdhuryrahulc/dynamodb/internal/rules"
+	RulesProduct "github.com/chowdhuryrahulc/dynamodb/internal/rules/product"
+	HttpStatus "github.com/chowdhuryrahulc/dynamodb/utils/http"
 	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
+	"github.com/chowdhuryrahulc/dynamodb/internal/controllers/product"
+	EntityProduct "github.com/chowdhuryrahulc/dynamodb/internal/entities/product"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 )
@@ -135,12 +141,40 @@ func (h *Handler) Options(w http.ResponseWriter, r *http.Request) {
 	HttpStatus.StatusNoContent(w,r)
 }
 
-func (h *Handler) getBodyAndValidate(w http.ResponseWriter, r *http.Request) () {
+// This function is used in Post and Put methods to work with body we get in the request
+//* Put/Post method used: body-->struct-->interface to model-->validate (done in this func) (not for Berlinger, Process1 was better for Berlinger)
+// 		this func also sets default values of CreatedAt/UpdatedAt
+func (h *Handler) getBodyAndValidate(r *http.Request, ID uuid.UUID) (*EntityProduct.Product, error) { // EntityProduct.Product comes from entities folder
 	// in post & put func you get a body from the data. That has to go inside dynamodb
 	// this func validates if the operation is validate or not
+	productBody := &EntityProduct.Product{}	//todo What does EntityProduct.Product{} do?
+
+	// converting body(json format) to struct/interface type (comes from rules folder)
+	body, err := h.Rules.ConvertIoReaderToStruct(r.Body, productBody)
+	if err != nil {
+		return &EntityProduct.Product{}, errors.New("body is required")
+	}
+
+	// changing struct/interface into model
+	productParsed, err := EntityProduct.InterfaceToModel(body)
+	if err != nil{
+		return &EntityProduct.Product{}, errors.New("error in converting body to model")
+	}
+
+	setDefaultValues(prproductParsed, ID)	// you want to update CreatedAt, UpdatedAt values of the api
+
+	// we return the validated result
+	return productParsed, h.Rule.Validate(productParsed)
 
 }
 
-func setDefaultValues(){
-
+func setDefaultValues(product *EntityProduct.Product, ID uuid.UUID){
+	// update CreatedAt, UpdatedAt values of the api
+	product.UpdatedAt = time.Now()
+	if ID == uuid.Nil{					// uuid.Nil is send only by POST request. For put, we dont have to set created at. Only updatedAt
+		product.ID = uuid.New()			// New uuid is given to the new product to be send to db
+		product.CreatedAt = time.Now() 	// creation time of this new prouct is now
+	} else {
+		product.ID = ID					// only for PUT
+	}
 }
