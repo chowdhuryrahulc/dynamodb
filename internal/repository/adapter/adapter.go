@@ -42,13 +42,14 @@ func (db *Database) Health() bool {
 
 func (db *Database) FindAll (condition expression.Expression, tableName string) (response *dynamodb.ScanOutput, err error) {
 	// expression.Expression is a part of dynamodb package
-	input := dynamodb.ScanInput{
+	input := &dynamodb.ScanInput{
 		ExpressionAttributeNames: condition.Names(),	// dynamodb query: conditions used to filter and fetch data
 		ExpressionAttributeValues: condition.Values(),
 		FilterExpression: condition.Filter(),
 		ProjectionExpression: condition.Projection(),
 		TableName: aws.String(tableName),
 	}
+	return db.connection.Scan(input)
 }
 
 

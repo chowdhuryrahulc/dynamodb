@@ -2,13 +2,17 @@ package product
 
 import (
 	"encoding/json"
+	"errors"
+	"time"
 
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/chowdhuryrahulc/dynamodb/internal/entities"
+	"github.com/google/uuid"
 )
 
 type Product struct {
 	entities.Base		// comes from entities/base.go, has id, createdAt, updatedAt (base struct and interface)
-	Name string `json: "name"`
+	Name string `json:"name"`
 }
 
 func InterfaceToModel(data interface{})(instance *Product, err error){
@@ -25,8 +29,7 @@ func InterfaceToModel(data interface{})(instance *Product, err error){
 
 func (p *Product) GetFilterId() map[string]interface{}{
 	// used in controller findone function
-	
-
+	return map[string]interface{}{"_id": p.ID.String()}
 }
 
 func (p *Product) TableName()string{
@@ -39,13 +42,39 @@ func (p *Product) Bytes()([]byte, error){
 }
 
 func (p *Product) GetMap()map[string]interface{}{
-
+	return map[string]interface{}{
+		"_id":       p.ID.String(),
+		"name":      p.Name,
+		"createdAt": p.CreatedAt.Format(entities.GetTimeFormat()),
+		"updatedAt": p.UpdatedAt.Format(entities.GetTimeFormat()),
+	}
 }
 
-func (p *Product) ParseDynamoAttributeToStruct()(){
-	// dynamoAttribute-->struct
+// dynamoAttribute-->struct
+func ParseDynamoAtributeToStruct(response map[string]*dynamodb.AttributeValue) (p Product, err error) {
+	if response == nil || (response != nil && len(response) == 0) {
+		return p, errors.New("Item not found")
+	}
+	for key, value := range response {
+		if key == "_id" {
+			p.ID, err = uuid.Parse(*value.S)
+			if p.ID == uuid.Nil {
+				err = errors.New("Item not found")
+			}
+		}
+		if key == "name" {
+			p.Name = *value.S
+		}
+		if key == "createdAt" {
+			p.CreatedAt, err = time.Parse(entities.GetTimeFormat(), *value.S)
+		}
+		if key == "updatedAt" {
+			p.UpdatedAt, err = time.Parse(entities.GetTimeFormat(), *value.S)
+		}
+		if err != nil {
+			return p, err
+		}
+	}
 
+	return p, nil
 }
-
-
-

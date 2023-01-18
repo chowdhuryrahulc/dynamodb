@@ -1,9 +1,11 @@
 package product
 
 import (
+	"time"
+
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
-	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
 	"github.com/chowdhuryrahulc/dynamodb/internal/entities/product"
+	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
 	"github.com/google/uuid"
 )
 
@@ -30,11 +32,11 @@ type Interface interface{
 	Remove(ID uuid.UUID) error
 }
 
-type NewController(repository adapter.Interface) Interface{
+func NewController(repository adapter.Interface) Interface{
 	// this returns type Interface interface{} as writen above
 	// this creates a new controller
 	return &Controller{
-		repository: repository
+		repository: repository,
 	}
 }
 
@@ -51,7 +53,7 @@ func (c *Controller) ListOne (id uuid.UUID) (entity product.Product, err error) 
 	if err != nil {
 		return entity, err
 	}
-	return product.ParseDynamoAttributeToStruct(response.Item) 
+	return product.ParseDynamoAtributeToStruct(response.Item) 
 }
 
 func (c *Controller) ListAll () (entities []product.Product, err error) {
@@ -78,10 +80,11 @@ func (c *Controller) ListAll () (entities []product.Product, err error) {
 		return entities, err
 	}
 	if response != nil {
+		// product.()
 		for _, value := range response.Items {
 			// ParseDynamoAttributeToStruct: converts everything that is stored in dynamodb 
 			// to struct that is understood by golang
-			entity, err := product.ParseDynamoAttributeToStruct()
+			entity, err := product.ParseDynamoAtributeToStruct(value)
 			if err != nil {
 				return entities, err
 			}
@@ -94,8 +97,9 @@ func (c *Controller) ListAll () (entities []product.Product, err error) {
 
 func (c *Controller) Create (entity *product.Product) (uuid.UUID, error) {
 	// gets the product model, creates the record, and returns the uuid of the product
+	// while creating, we add the value of createdAt, while updating, we update the value of updatedAt
 	entity.CreatedAt = time.Now()	// we modify the createdAt value
-	c.repository.CreateOrUpdate(entity.GetMap(), entity.TableName())	// from repository
+	_, err := c.repository.CreateOrUpdate(entity.GetMap(), entity.TableName())	// from repository
 	return entity.ID, err
 }
 
@@ -103,8 +107,21 @@ func (c *Controller) Update (id uuid.UUID, entity *product.Product) error{
 	// you get uuid and product model, and update in the position uuid with the new product model
 	// do update func in the end, after completing all others
 
+	found, err := c.ListOne(id) 	// listone returns the product from dynamodb based on id provided
+	if err != nil{
+		return err
+	}
 
-	
+	found.ID = id
+	found.Name = entity.Name
+	found.UpdatedAt = time.Now()
+	// while creating, we add the value of createdAt, while updating, we update the value of updatedAt
+	_, err = c.repository.CreateOrUpdate(found.GetMap(), entity.TableName()) 
+	//todo What is found.GetMap()? or entity.GetMap?
+	return err
+
+
+
 }
 
 func (c *Controller) Remove (id uuid.UUID) error {
@@ -113,7 +130,7 @@ func (c *Controller) Remove (id uuid.UUID) error {
 	if err != nil{
 		return err
 	} 
-	_, err := c.repository.Delete(entity.GetFilterId(), entity.TableName())
+	_, err = c.repository.Delete(entity.GetFilterId(), entity.TableName())
 	return err
 }
 

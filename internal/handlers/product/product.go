@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/chowdhuryrahulc/dynamodb/internal/controllers/product"
+	"github.com/chowdhuryrahulc/dynamodb/internal/controllers"//If error,add /products
 	EntityProduct "github.com/chowdhuryrahulc/dynamodb/internal/entities/product"
 	handler "github.com/chowdhuryrahulc/dynamodb/internal/handlers"
 	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
@@ -67,7 +67,7 @@ func (h *Handler) getOne(w http.ResponseWriter, r *http.Request) {
 		HttpStatus.StatusInternalServerError(w, r, err)
 		return
 	}
-	HttpStatus.StatusOK(w, r, response)
+	HttpStatus.StatusOk(w, r, response)
 }
 
 func (h *Handler) getAll(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +76,7 @@ func (h *Handler) getAll(w http.ResponseWriter, r *http.Request) {
 		HttpStatus.StatusInternalServerError(w, r, err)
 		return
 	}
-	HttpStatus.StatusOK(w, r, response)
+	HttpStatus.StatusOk(w, r, response)
 }
 
 func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
@@ -93,7 +93,7 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 		HttpStatus.StatusInternalServerError(w, r, err)
 		return
 	}
-	HttpStatus.StatusOK(w, r, map[string]interface{}{"id": ID.String()})
+	HttpStatus.StatusOk(w, r, map[string]interface{}{"id": ID.String()})
 
 }
 
@@ -161,10 +161,10 @@ func (h *Handler) getBodyAndValidate(r *http.Request, ID uuid.UUID) (*EntityProd
 		return &EntityProduct.Product{}, errors.New("error in converting body to model")
 	}
 
-	setDefaultValues(prproductParsed, ID)	// you want to update CreatedAt, UpdatedAt values of the api
+	setDefaultValues(productParsed, ID)	// you want to update CreatedAt, UpdatedAt values of the api
 
 	// we return the validated result
-	return productParsed, h.Rule.Validate(productParsed)
+	return productParsed, h.Rules.Validate(productParsed)
 
 }
 

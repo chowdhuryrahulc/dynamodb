@@ -16,7 +16,7 @@ type Router struct {
 
 func NewRouter() *Router {
 	return &Router{
-		config: NewConfig().SetTimeout(serviceConfig.GetConfig().Timeout),
+		config: NewConfig().SetTimeout(ServerConfig.GetConfig().Timeout),
 		router: chi.NewRouter(),
 	}
 }
@@ -41,7 +41,7 @@ func (r *Router) setConfigsRouters() {
 // delete all r Routers below
 func (r *Router) RouterHealth(repository adapter.Interface) {
 	//? All Health Routes here 
-	handler := HealthHandler.newHandler(repository)
+	handler := HealthHandler.NewHandler(repository)
 
 	// putting our routes, same done by gorilla mux
 	r.router.Route("/health", func(route chi.Router){
@@ -55,7 +55,7 @@ func (r *Router) RouterHealth(repository adapter.Interface) {
 
 func (r *Router) RouterProduct(repository adapter.Interface) {
 	//? All Product Routes here 
-	handler := ProductHandler.newHandler(repository)
+	handler := ProductHandler.NewHandler(repository)
 
 	// putting our routes, same done by gorilla mux
 	r.router.Route("/product", func(route chi.Router){

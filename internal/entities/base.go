@@ -43,12 +43,12 @@ func GetTimeFormat()string{
 	return "2010-01-02T15:04:05-0700" // this is regular timestamp, get from google (constant accross the world)
 }
 
-func (b *Base) TableName() string {
+// func (b *Base) TableName() string {
 
-}
+// }
 
-func (b *Base) GetMap() map[string]interface{
+// func (b *Base) GetMap() map[string]interface{
 
-}
+// }
 
-func (b *Base) GetFilterId() map[string]interface{}
+// func (b *Base) GetFilterId() map[string]interface{}

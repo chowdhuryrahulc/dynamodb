@@ -29,14 +29,14 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request){
 	if !h.Repository.Health(){
 		// errors comming from errors pkg
 		// below line just sends a error response
-		HttpStatus.StatusInternalServerError(w, r, errors.New("Relational database not alive"))
+		HttpStatus.StatusInternalServerError(w, r, errors.New("relational database not alive"))
 		return
 	}
-	HttpStatus.StatusOK(w, r, "Service OK")
+	HttpStatus.StatusOk(w, r, "Service OK")
 }
 
 func (h *Handler) Post(w http.ResponseWriter, r *http.Request){
-	HttpStatus.StatusMethodNotAllowed(w,r)
+	HttpStatus.StatusMethodNotAllowed(w, r)
 }
 
 func (h *Handler) Put(w http.ResponseWriter, r *http.Request){
@@ -48,5 +48,5 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request){
 }
 
 func (h *Handler) Options(w http.ResponseWriter, r *http.Request){
-	HttpStatus.StatusNotContent(w,r)
+	HttpStatus.StatusNoContent(w,r)
 }

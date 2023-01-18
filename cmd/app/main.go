@@ -79,7 +79,7 @@ import (
 	"github.com/chowdhuryrahulc/dynamodb/internal/repository/instance"
 	"github.com/chowdhuryrahulc/dynamodb/internal/routes"
 	"github.com/chowdhuryrahulc/dynamodb/internal/rules"
-	"github.com/chowdhuryrahulc/dynamodb/internal/rules/product"
+	RulesProduct "github.com/chowdhuryrahulc/dynamodb/internal/rules/product"
 	"github.com/chowdhuryrahulc/dynamodb/utils/logger"
 )
 

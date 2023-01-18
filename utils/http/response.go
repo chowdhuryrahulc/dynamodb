@@ -74,7 +74,7 @@ func StatusNotFound(w http.ResponseWriter, r *http.Request, err error) {
 }
 
 //405
-func StatusMethodNotAllowed(w http.ResponseWriter, r *http.Request, data interface{}) {
+func StatusMethodNotAllowed(w http.ResponseWriter, r *http.Request) {
 	newResponse(nil, http.StatusMethodNotAllowed).sendResponse(w,r)
 }
 
