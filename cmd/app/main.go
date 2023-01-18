@@ -37,13 +37,15 @@ Controller level-->interface(database level, repository/adapters)-->FindOne, Del
 Post/Put request format:
 	Process1: (Best formt, Not implemented in this project)
 		?body(json format)-->unmarshal()-->validate-->marshal-->store in db(dynamodb)
-		golang does not understand json
+		golang does not understand json. Thatswhy we use "encoding/json" pkg (which does marshaling/unmarshaling)
 	Process2: (using Interfaces, implemented in this project)
 		body-->struct-->interface to model-->validate
 ! Dont implement 2nd process, as done here. Use 1st, as done in other projects
 ! Also use project folder structure used in other projects (cmd and pkg) instead of here (flask/django format)
 		todo done in complete serverless ... video (dynamodb used)
-
+Used uuid to store in dynamodb
+You need to add logger in BERLINGER
+And also HttpStatus responses
 
 ***************************************************************************************************
 

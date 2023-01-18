@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/chowdhuryrahulc/dynamodb/internal/handlers"
+	"github.com/chowdhuryrahulc/dynamodb/internal/controllers/product"
+	EntityProduct "github.com/chowdhuryrahulc/dynamodb/internal/entities/product"
+	handler "github.com/chowdhuryrahulc/dynamodb/internal/handlers"
+	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
 	Rules "github.com/chowdhuryrahulc/dynamodb/internal/rules"
 	RulesProduct "github.com/chowdhuryrahulc/dynamodb/internal/rules/product"
 	HttpStatus "github.com/chowdhuryrahulc/dynamodb/utils/http"
-	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
-	"github.com/chowdhuryrahulc/dynamodb/internal/controllers/product"
-	EntityProduct "github.com/chowdhuryrahulc/dynamodb/internal/entities/product"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 )

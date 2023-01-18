@@ -6,6 +6,7 @@ import (
 
 	"github.com/chowdhuryrahulc/dynamodb/internal/handlers"
 	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
+	HttpStatus "github.com/chowdhuryrahulc/dynamodb/utils/http"
 )
 
 type Handler struct {
