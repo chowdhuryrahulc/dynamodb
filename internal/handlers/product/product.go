@@ -27,6 +27,16 @@ import (
 
 // creating handlers for products
 type Handler struct {
+
+	//******************************************************************************************************************
+	// 								PERSONAL NOTES
+	// 3 interfces, handler, product and rules added in this struct
+	// handler interface				: get, post, put, delete, options
+	// controller or product interface	: listone, listall, create, update, remove
+	// rules interface					: convertIoReaderToStruct, getmock, migrate, validate
+	//******************************************************************************************************************
+
+
 	handler.Interface // using interfaces (mentioned in internal/handlers/product.go)
 	Controller        product.Interface
 	Rules             Rules.Interface

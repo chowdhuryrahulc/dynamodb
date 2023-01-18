@@ -18,9 +18,6 @@ type Controller struct{
 	// with interfaces, other structs can use your methords. 
 	// You just have to register your interface in other structs like done above
 	// but first you need to add all the struct methords in the Interface interface{} before transporting it to other struct
-
-
-
 }
 
 type Interface interface{

@@ -70,7 +70,27 @@ func (r *Rules) CreateTable(connection *dynamodb.DynamoDB) error {
 	// The whole code below is taken from dynamodb docomentation directly
 	// so copy the below code in every dynamodb project
 	// you have to use this func every time you connect to dynamodb
-	//todo Where is this func used? And where to put it in BERLINGER
+
+	//**********************************************************************************************************************************
+	//									PERSONAL NOTES
+	//! Where is this func used? 
+	//Sol: Migrate, in this file And migrate is used in main.go and internal/handlers/product/product.go
+	// In main.go it is used in Migrate function, which is then used in main.go as [errors := Migrate(connection)]
+	// this is used as part of database migration, still todo
+	// todo Learn more about database migration
+	// in handlers/products/products.go it is giving error in RulesProduct.NewRules(). 
+	// Means probably bcoz of interface this error is present?? In interface Migrate methord is mentioned. So that gives error
+	// And so..❓
+	// Even in main, RulesProduct.NewRules() shows error❓
+	//todo And where does the connection go??
+	//todo Why is that if we delete any of the methord from rules, RulesProduct.NewRules() shows error? Where is that comming from??
+	//todo Learn Interfaces better?
+	//todo Learn this project & golang basics
+	//**********************************************************************************************************************************
+
+
+
+	//todo And where to put it in BERLINGER
 	table := &product.Product{}
 	input := &dynamodb.CreateTableInput{
 		AttributeDefinitions: []*dynamodb.AttributeDefinition{
