@@ -83,27 +83,26 @@ import (
 	"github.com/chowdhuryrahulc/dynamodb/utils/logger"
 )
 
-
-func main(){
-	configs := config.GetConfig()			// from config file
-	connection := instance.GetConnection()	// sets up a connection/session with dynamodb (from internal/repository/instance)
-	repository := adapter.NewAdapter(connection) // returns the Database struct. You can access entire database using this (from internam/repository/adapter) 
+func main() {
+	configs := config.GetConfig()                // from config file
+	connection := instance.GetConnection()       // sets up a connection/session with dynamodb (from internal/repository/instance)
+	repository := adapter.NewAdapter(connection) // returns the Database struct. You can access entire database using this (from internam/repository/adapter)
 
 	logger.INFO("waiting for the service to start.....", nil)
-	errors := Migrate(connection)			// for database migration (can be skipped)(implemented below)
-	if len(errors)>0{						// logging database migration errors
-		for _, err := range errors{
+	errors := Migrate(connection) // for database migration (can be skipped)(implemented below)
+	if len(errors) > 0 {          // logging database migration errors
+		for _, err := range errors {
 			logger.PANIC("Error on migration:....", err)
 		}
 	}
 
-	logger.PANIC("", checkTables(connection)) // logging check table function errors 
-	
-	port := fmt.Sprintf("%v", configs.Port)
+	logger.PANIC("", checkTables(connection)) // logging check table function errors
+
+	port := fmt.Sprintf(":%v", configs.Port)
 	router := routes.NewRouter().SetRouters(repository) //todo What does this do? (from routers folder)
 	logger.INFO("service is running on port", port)
 
-	error:= http.ListenAndServe(port, router) // creates a server
+	error := http.ListenAndServe(port, router) // creates a server
 	log.Fatal(error)
 }
 
@@ -114,7 +113,7 @@ func Migrate(connection *dynamodb.DynamoDB) []error {
 	return errors
 }
 
-func callMigrateAndAppendError(errors *[]error, connection *dynamodb.DynamoDB, rule rules.Interface){
+func callMigrateAndAppendError(errors *[]error, connection *dynamodb.DynamoDB, rule rules.Interface) {
 	err := rule.Migrate(connection)
 	if err != nil {
 		*errors = append(*errors, err)
@@ -124,13 +123,13 @@ func callMigrateAndAppendError(errors *[]error, connection *dynamodb.DynamoDB, r
 func checkTables(connection *dynamodb.DynamoDB) error {
 	// connection = instance.getconnection which connects to dynamodb session
 	// ListTables lists all the tables you have in your dynamodb
-	// if the number of tables is 0, then it shows no dynamodb tables found. 
+	// if the number of tables is 0, then it shows no dynamodb tables found.
 	// But if the number of tables in dynamodb is more than 1, then it says tables found
-	// BERLINGER: I think it will be better to check name of the dynamodb tables. 
+	// BERLINGER: I think it will be better to check name of the dynamodb tables.
 	// And when we change or update the dynamodb table to a new table, it should auto-detect an start reading from the new table
 	response, err := connection.ListTables(&dynamodb.ListTablesInput{})
 	if response != nil {
-		if len(response.TableNames)== 0{
+		if len(response.TableNames) == 0 {
 			logger.INFO("Tables not found:", nil)
 		}
 		for _, tableName := range response.TableNames {

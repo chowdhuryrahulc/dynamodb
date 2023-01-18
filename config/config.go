@@ -18,7 +18,7 @@ type Config struct{
 func GetConfig() Config {
 	// returns values of Config
 	return Config{
-		Port: parseEnvToInt("PORT", "8080"),
+		Port: parseEnvToInt("PORT", ":8080"),
 		Timeout: parseEnvToInt("TIMEOUT", "30"),	// 30 means 30sec
 		Dialect: env.GetEnv("DIALECT", "sqllite3"), // enviournment can be production, testing etc
 		DatabaseURI: env.GetEnv("DATABASE_URI", ":memory:"),
