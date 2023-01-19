@@ -3,7 +3,7 @@ package main
 //todo How did this project get my dynamodb access? From CLI credentials??
 //todo: Make a similar app, using BERLINGER functions etc. Dont follow project structure. That comes later. BatchGet
 //todo Session started and all dynamodb direct interacting files are in Repository. So use those functions
-//todo: check if only check tables work in a new project or not 
+//todo: check if only check tables work in a new project or not
 
 /*
 PROJECT STRUCTURE:

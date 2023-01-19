@@ -5,10 +5,10 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
-func GetConnection()*dynamodb.DynamoDB{
+func GetConnection() *dynamodb.DynamoDB {
 
 	// new sesson in dynamodb
-	sess:= session.Must(session.NewSessionWithOptions(session.Options{
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 

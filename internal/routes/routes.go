@@ -1,12 +1,12 @@
 package routes //! This file has all the routes
 
 import (
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
 	ServerConfig "github.com/chowdhuryrahulc/dynamodb/config" // this is our config folder in outer project
 	HealthHandler "github.com/chowdhuryrahulc/dynamodb/internal/handlers/health"
 	ProductHandler "github.com/chowdhuryrahulc/dynamodb/internal/handlers/product"
+	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
 type Router struct {
@@ -22,7 +22,7 @@ func NewRouter() *Router {
 }
 
 func (r *Router) SetRouters(repository adapter.Interface) *chi.Mux {
-	r.setConfigsRouters() 		// these 3 functions are defined below
+	r.setConfigsRouters() // these 3 functions are defined below
 	r.RouterHealth(repository)
 	r.RouterProduct(repository)
 
@@ -40,11 +40,11 @@ func (r *Router) setConfigsRouters() {
 
 // delete all r Routers below
 func (r *Router) RouterHealth(repository adapter.Interface) {
-	//? All Health Routes here 
+	//? All Health Routes here
 	handler := HealthHandler.NewHandler(repository)
 
 	// putting our routes, same done by gorilla mux
-	r.router.Route("/health", func(route chi.Router){
+	r.router.Route("/health", func(route chi.Router) {
 		route.Post("/", handler.Post)
 		route.Get("/", handler.Get)
 		route.Put("/", handler.Put)
@@ -54,11 +54,17 @@ func (r *Router) RouterHealth(repository adapter.Interface) {
 }
 
 func (r *Router) RouterProduct(repository adapter.Interface) {
-	//? All Product Routes here 
-	handler := ProductHandler.NewHandler(repository)
+	//? All Product Routes here
+
+	//****************************************************************************************************
+	// 								PERSONAL NOTES
+	// without .NewHandler(repo) you dont get hndler, so no handler.get, handler.post etc for chi router
+	// so it gives us a newHandler to be used in somewhere else
+	//****************************************************************************************************
+	handler := ProductHandler.NewHandler(repository) //!What is this doing here?? Sol: see above
 
 	// putting our routes, same done by gorilla mux
-	r.router.Route("/product", func(route chi.Router){
+	r.router.Route("/product", func(route chi.Router) {
 		route.Post("/", handler.Post)
 		route.Get("/", handler.Get)
 		route.Put("/{ID}", handler.Put)

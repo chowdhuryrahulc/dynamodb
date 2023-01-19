@@ -38,54 +38,54 @@ func (resp *response) sendResponse(w http.ResponseWriter, r *http.Request) {
 	//? most important function in this file
 	// here we send response to front-end
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")	// this handles CORS errors
+	w.Header().Set("Access-Control-Allow-Origin", "*") // this handles CORS errors
 	w.WriteHeader(resp.Status)
-	_,_ = w.Write(resp.bytes())
+	_, _ = w.Write(resp.bytes())
 	log.Println(resp.string())
 
 }
 
-//* different response functions for different status codes below (great for production)
+// * different response functions for different status codes below (great for production)
 // if you dont say anything, backend will send only 500, which does not tell us the exact problem
 // below are all status errors
-//200
+// 200
 func StatusOk(w http.ResponseWriter, r *http.Request, data interface{}) {
 	// data & http.StatusOK gets converted to response struct in newResponse
 	// and that response gets send to sendResponse which sends the response
-	newResponse(data, http.StatusOK).sendResponse(w,r)
+	newResponse(data, http.StatusOK).sendResponse(w, r)
 }
 
-//204
+// 204
 func StatusNoContent(w http.ResponseWriter, r *http.Request) {
 	//NoContent error means no data interface{} will be passed
-	newResponse(nil, http.StatusNoContent).sendResponse(w,r)
+	newResponse(nil, http.StatusNoContent).sendResponse(w, r)
 }
 
-//400
+// 400
 func StatusBadRequest(w http.ResponseWriter, r *http.Request, err error) {
-	data:= map[string]interface{}{"error": err.Error()}
-	newResponse(data, http.StatusBadRequest).sendResponse(w,r)
+	data := map[string]interface{}{"error": err.Error()}
+	newResponse(data, http.StatusBadRequest).sendResponse(w, r)
 }
 
-//404
+// 404
 func StatusNotFound(w http.ResponseWriter, r *http.Request, err error) {
-	data:= map[string]interface{}{"error": err.Error()}
-	newResponse(data, http.StatusNotFound).sendResponse(w,r)
+	data := map[string]interface{}{"error": err.Error()}
+	newResponse(data, http.StatusNotFound).sendResponse(w, r)
 }
 
-//405
+// 405
 func StatusMethodNotAllowed(w http.ResponseWriter, r *http.Request) {
-	newResponse(nil, http.StatusMethodNotAllowed).sendResponse(w,r)
+	newResponse(nil, http.StatusMethodNotAllowed).sendResponse(w, r)
 }
 
-//409
+// 409
 func StatusConflict(w http.ResponseWriter, r *http.Request, err error) {
-	data:= map[string]interface{}{"error": err.Error()}
-	newResponse(data, http.StatusOK).sendResponse(w,r)
+	data := map[string]interface{}{"error": err.Error()}
+	newResponse(data, http.StatusOK).sendResponse(w, r)
 }
 
-//500
+// 500
 func StatusInternalServerError(w http.ResponseWriter, r *http.Request, err error) {
-	data:= map[string]interface{}{"error": err.Error()}
-	newResponse(data, http.StatusOK).sendResponse(w,r)
+	data := map[string]interface{}{"error": err.Error()}
+	newResponse(data, http.StatusOK).sendResponse(w, r)
 }

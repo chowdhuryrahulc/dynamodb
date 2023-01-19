@@ -2,6 +2,7 @@ package rules
 
 import (
 	"io"
+
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
@@ -10,14 +11,12 @@ import (
 //*******************************************************************************************
 // 								PERSONAL NOTES
 // This interface is used in handlers/products/products.go and main.go as Rules.Interface
-// 
+//
 //*******************************************************************************************
 
-type Interface interface{
-	ConvertIoReaderToStruct(data io.Reader, model interface{})(body interface{}, err error)
-	GetMock() interface{}		// returns mock values
+type Interface interface {
+	ConvertIoReaderToStruct(data io.Reader, model interface{}) (body interface{}, err error)
+	GetMock() interface{} // returns mock values
 	Migrate(connection *dynamodb.DynamoDB) error
-	Validate (model interface{}) error
+	Validate(model interface{}) error
 }
-
- 

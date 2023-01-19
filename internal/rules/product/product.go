@@ -73,22 +73,20 @@ func (r *Rules) CreateTable(connection *dynamodb.DynamoDB) error {
 
 	//**********************************************************************************************************************************
 	//									PERSONAL NOTES
-	//! Where is this func used? 
+	//! Where is this func used?
 	//Sol: Migrate, in this file And migrate is used in main.go and internal/handlers/product/product.go
 	// In main.go it is used in Migrate function, which is then used in main.go as [errors := Migrate(connection)]
 	// this is used as part of database migration, still todo
 	// todo Learn more about database migration
-	// in handlers/products/products.go it is giving error in RulesProduct.NewRules(). 
+	// in handlers/products/products.go it is giving error in RulesProduct.NewRules().
 	// Means probably bcoz of interface this error is present?? In interface Migrate methord is mentioned. So that gives error
 	// And so..❓
-	// Even in main, RulesProduct.NewRules() shows error❓
+	// Even in main, RulesProduct.NewRules() shows error: Sol-> see interface repo. It create a new instance in different file
 	//todo And where does the connection go??
-	//todo Why is that if we delete any of the methord from rules, RulesProduct.NewRules() shows error? Where is that comming from??
-	//todo Learn Interfaces better?
+	//!Why is that if we delete any of the methord from rules, RulesProduct.NewRules() shows error? Where is that comming from??
+	// Sol: see interface repository. It basically creates a new instance for that file to use
 	//todo Learn this project & golang basics
 	//**********************************************************************************************************************************
-
-
 
 	//todo And where to put it in BERLINGER
 	table := &product.Product{}
@@ -102,23 +100,23 @@ func (r *Rules) CreateTable(connection *dynamodb.DynamoDB) error {
 		KeySchema: []*dynamodb.KeySchemaElement{
 			{
 				AttributeName: aws.String("_id"),
-				KeyType: aws.String("HASH"),
+				KeyType:       aws.String("HASH"),
 			},
 		},
 		ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
-			ReadCapacityUnits: aws.Int64(10),
+			ReadCapacityUnits:  aws.Int64(10),
 			WriteCapacityUnits: aws.Int64(10),
 		},
 		TableName: aws.String(table.TableName()),
 	}
 	response, err := connection.CreateTable(input)
 	if err != nil && strings.Contains(err.Error(), "Table already exists") {
-		//* This should be where the func should always return nil, bcoz table will always exist 
+		//* This should be where the func should always return nil, bcoz table will always exist
 		return nil
 	}
 
 	if response != nil && strings.Contains(response.GoString(), "TableStatus:\"CREATING\"") {
-		time.Sleep(3*time.Second)
+		time.Sleep(3 * time.Second)
 		err = r.CreateTable(connection)
 		if err != nil {
 			return err

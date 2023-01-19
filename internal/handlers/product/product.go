@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/chowdhuryrahulc/dynamodb/internal/controllers"//If error,add /products
+	product "github.com/chowdhuryrahulc/dynamodb/internal/controllers" //If error,add /products
 	EntityProduct "github.com/chowdhuryrahulc/dynamodb/internal/entities/product"
 	handler "github.com/chowdhuryrahulc/dynamodb/internal/handlers"
 	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
@@ -34,18 +34,24 @@ type Handler struct {
 	// handler interface				: get, post, put, delete, options
 	// controller or product interface	: listone, listall, create, update, remove
 	// rules interface					: convertIoReaderToStruct, getmock, migrate, validate
+
+	// func implemented here: get, getOne, getAll, post, put, delete, options, getBodyAndValidate, setDefaultValues
+	// all func of handler.interface as implemented here. Not controller or rules interface.
+	// means "Rules Rules.Interface" is not the way to implement interface func,
+	//!then why are they there??
+	// Sol: controller and rules interface functions are also implemented, but inside struct functions (can be hndler.interface func also)
+	//? Means "Rules Rules.Interface" types are there to be implemented inside struct funcs
 	//******************************************************************************************************************
 
-
-	handler.Interface // using interfaces (mentioned in internal/handlers/product.go)
-	Controller        product.Interface
-	Rules             Rules.Interface
+	handler.Interface                   // using interfaces (mentioned in internal/handlers/product.go)
+	Controller        product.Interface // func inside product.interface or rules.interface are implemented inside
+	Rules             Rules.Interface   // the struct funcs below (see above for more explaination)
 }
 
 func NewHandler(repository adapter.Interface) handler.Interface {
 	return &Handler{
-		Controller: product.NewController(repository),
-		Rules:      RulesProduct.NewRules(),
+		Controller: product.NewController(repository), //!Why are these used here?? And what do they do?
+		Rules:      RulesProduct.NewRules(),			// Sol: see interface repository for better explaination
 	}
 }
 
@@ -127,7 +133,7 @@ func (h *Handler) Put(w http.ResponseWriter, r *http.Request) {
 		HttpStatus.StatusInternalServerError(w, r, err)
 		return
 	}
-	HttpStatus.StatusNoContent(w,r)
+	HttpStatus.StatusNoContent(w, r)
 
 }
 
@@ -142,22 +148,21 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		HttpStatus.StatusInternalServerError(w, r, err)
 		return
 	}
-	HttpStatus.StatusNoContent(w,r)
-
+	HttpStatus.StatusNoContent(w, r)
 
 }
 
 func (h *Handler) Options(w http.ResponseWriter, r *http.Request) {
-	HttpStatus.StatusNoContent(w,r)
+	HttpStatus.StatusNoContent(w, r)
 }
 
 // This function is used in Post and Put methods to work with body we get in the request
-//* Put/Post method used: body-->struct-->interface to model-->validate (done in this func) (not for Berlinger, Process1 was better for Berlinger)
-// 		this func also sets default values of CreatedAt/UpdatedAt
+//   - Put/Post method used: body-->struct-->interface to model-->validate (done in this func) (not for Berlinger, Process1 was better for Berlinger)
+//     this func also sets default values of CreatedAt/UpdatedAt
 func (h *Handler) getBodyAndValidate(r *http.Request, ID uuid.UUID) (*EntityProduct.Product, error) { // EntityProduct.Product comes from entities folder
 	// in post & put func you get a body from the data. That has to go inside dynamodb
 	// this func validates if the operation is validate or not
-	productBody := &EntityProduct.Product{}	//todo What does EntityProduct.Product{} do?
+	productBody := &EntityProduct.Product{} //todo What does EntityProduct.Product{} do?
 
 	// converting body(json format) to struct/interface type (comes from rules folder)
 	body, err := h.Rules.ConvertIoReaderToStruct(r.Body, productBody)
@@ -167,24 +172,24 @@ func (h *Handler) getBodyAndValidate(r *http.Request, ID uuid.UUID) (*EntityProd
 
 	// changing struct/interface into model
 	productParsed, err := EntityProduct.InterfaceToModel(body)
-	if err != nil{
+	if err != nil {
 		return &EntityProduct.Product{}, errors.New("error in converting body to model")
 	}
 
-	setDefaultValues(productParsed, ID)	// you want to update CreatedAt, UpdatedAt values of the api
+	setDefaultValues(productParsed, ID) // you want to update CreatedAt, UpdatedAt values of the api
 
 	// we return the validated result
 	return productParsed, h.Rules.Validate(productParsed)
 
 }
 
-func setDefaultValues(product *EntityProduct.Product, ID uuid.UUID){
+func setDefaultValues(product *EntityProduct.Product, ID uuid.UUID) {
 	// update CreatedAt, UpdatedAt values of the api
 	product.UpdatedAt = time.Now()
-	if ID == uuid.Nil{					// uuid.Nil is send only by POST request. For put, we dont have to set created at. Only updatedAt
-		product.ID = uuid.New()			// New uuid is given to the new product to be send to db
-		product.CreatedAt = time.Now() 	// creation time of this new prouct is now
+	if ID == uuid.Nil { // uuid.Nil is send only by POST request. For put, we dont have to set created at. Only updatedAt
+		product.ID = uuid.New()        // New uuid is given to the new product to be send to db
+		product.CreatedAt = time.Now() // creation time of this new prouct is now
 	} else {
-		product.ID = ID					// only for PUT
+		product.ID = ID // only for PUT
 	}
 }

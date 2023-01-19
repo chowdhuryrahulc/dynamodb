@@ -16,18 +16,18 @@ func NewConfig() *Config {
 	return &Config{}
 }
 
-func (c *Config) Cors(next http.Handler)http.Handler{
+func (c *Config) Cors(next http.Handler) http.Handler {
 	// most imp function in thiss config.go
 	return cors.New(cors.Options{
-		//. (*) means all allowed. Below statements means all origins, methords, 
+		//. (*) means all allowed. Below statements means all origins, methords,
 		// headers anr allowed, and all headers are exposed
 		// anyone trying to hit with any ip address will be allowed
-		AllowedOrigins: []string{"*"},
-		AllowedMethods: []string{"*"},
-		AllowedHeaders: []string{"*"},
-		ExposedHeaders: []string{"*"},
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"*"},
+		AllowedHeaders:   []string{"*"},
+		ExposedHeaders:   []string{"*"},
 		AllowCredentials: true,
-		MaxAge: 5,
+		MaxAge:           5,
 	}).Handler(next)
 }
 
@@ -36,6 +36,6 @@ func (c *Config) SetTimeout(timeInSeconds int) *Config {
 	return c
 }
 
-func (c *Config) GetTimeout() time.Duration{
+func (c *Config) GetTimeout() time.Duration {
 	return c.timeout
 }
