@@ -5,6 +5,10 @@ package main
 //todo Session started and all dynamodb direct interacting files are in Repository. So use those functions
 //todo: check if only check tables work in a new project or not
 
+//todo How are they using entities folder to store stuff? Like Sashi was storing uuid in dynamodb file
+//todo They store the product info in the entities folder. How??
+
+
 /*
 PROJECT STRUCTURE:
 migrate func	: migrate dynamodb tables ❓					NECESSARY FOR BERLINGER
@@ -74,12 +78,12 @@ Repository: has code about talking to db
 */
 
 import (
-	"fmt"
+	// "fmt"
 	"log"
 	"net/http"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/chowdhuryrahulc/dynamodb/config"
+	// "github.com/chowdhuryrahulc/dynamodb/config"
 	"github.com/chowdhuryrahulc/dynamodb/internal/repository/adapter"
 	"github.com/chowdhuryrahulc/dynamodb/internal/repository/instance"
 	"github.com/chowdhuryrahulc/dynamodb/internal/routes"
@@ -89,7 +93,7 @@ import (
 )
 
 func main() {
-	configs := config.GetConfig()                // from config file
+	// configs := config.GetConfig()                // from config file
 	connection := instance.GetConnection()       // sets up a connection/session with dynamodb (from internal/repository/instance)
 	repository := adapter.NewAdapter(connection) // returns the Database struct. You can access entire database using this (from internam/repository/adapter)
 
@@ -103,7 +107,8 @@ func main() {
 
 	logger.PANIC("", checkTables(connection)) // logging check table function errors
 
-	port := fmt.Sprintf(":%v", configs.Port)
+	port := ":8080"			//! modified, delete if necessary
+	// fmt.Sprintf(":%v", configs.Port)
 	router := routes.NewRouter().SetRouters(repository) //todo What does this do? (from routers folder)
 	logger.INFO("service is running on port", port)
 

@@ -58,7 +58,6 @@ func NewHandler(repository adapter.Interface) handler.Interface {
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	// this func will determine if the control goes to getOne or getAll function
 	// if ID gets passed in params, then we will call getOne function. If it doesnt, call getAll
-
 	if chi.URLParam(r, "ID") != "" {
 		h.getOne(w, r)
 	} else {
@@ -110,7 +109,6 @@ func (h *Handler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	HttpStatus.StatusOk(w, r, map[string]interface{}{"id": ID.String()})
-
 }
 
 func (h *Handler) Put(w http.ResponseWriter, r *http.Request) {

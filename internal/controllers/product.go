@@ -46,7 +46,7 @@ func (c *Controller) ListOne(id uuid.UUID) (entity product.Product, err error) {
 	// entity.TableName(): in which table does the value resides
 	// FindOne: comes from adapters.adapters.go. It is a adapter interface function
 	// (means talks to database directly, controller-->adapter/repository)
-	//! c.repository.FindOne comes from
+	//! c.repository.FindOne comes from adapters.go (to see more, see interface repository)
 	response, err := c.repository.FindOne(entity.GetFilterId(), entity.TableName())
 	if err != nil {
 		return entity, err
@@ -97,6 +97,7 @@ func (c *Controller) Create(entity *product.Product) (uuid.UUID, error) {
 	// gets the product model, creates the record, and returns the uuid of the product
 	// while creating, we add the value of createdAt, while updating, we update the value of updatedAt
 	entity.CreatedAt = time.Now()                                              // we modify the createdAt value
+	//todo How does entity.GetMap work?  
 	_, err := c.repository.CreateOrUpdate(entity.GetMap(), entity.TableName()) // from repository
 	return entity.ID, err
 }

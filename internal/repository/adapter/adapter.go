@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
+	"github.com/chowdhuryrahulc/dynamodb/utils/logger"
 )
 
 type Database struct {
@@ -70,6 +71,7 @@ func (db *Database) FindOne(condition map[string]interface{}, tableName string) 
 
 func (db *Database) CreateOrUpdate(entity interface{}, tableName string) (response *dynamodb.PutItemOutput, err error) {
 	// this same function is used for creating or updating
+	logger.INFO("interface value", entity) // Output: map[_id:1ad1b93d-2ca8-42fe-b91b-d56a209924b3 createdAt:19010-01-19T21:24:05+0530 name:strawberry updatedAt:19010-01-19T21:24:05+0530]
 	entityParsed, err := dynamodbattribute.MarshalMap(entity)
 	if err != nil {
 		return nil, err
